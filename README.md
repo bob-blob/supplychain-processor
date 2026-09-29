@@ -22,6 +22,7 @@ Two ways of launching the code: via Docker compose; locally. The steps require y
 
 ## Build jar locally & Launch in Docker
 > ./gradlew bootJar
+
 > docker compose up --build
 
 ## Run & Build locally
