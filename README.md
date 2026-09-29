@@ -18,11 +18,11 @@ and then we would have a cyclic graph in database. To remove this problem I've a
 are simple and fast.
 
 ## Project setup
-Two ways of launching the code: via Docker compose; locally
+Two ways of launching the code: via Docker compose; locally. The steps require you to have either locally deployed postgres. Or installed docker/docker compose.
 
 ## Build jar locally & Launch in Docker
-./gradlew bootJar
-docker compose up --build
+> ./gradlew bootJar
+> docker compose up --build
 
 ## Run & Build locally
 ### First launch Postgres database container in docker
