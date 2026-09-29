@@ -37,7 +37,7 @@ postgres:17
 ### Compile the jar via gradle
 > ./gradlew bootJar
 
-### Launch jar
+### Launch jar (Important! Should be Java version 25)
 > java -jar build/libs/app.jar
 
 ## Test the app
