@@ -2,7 +2,7 @@ package com.prewave.supplychain_processor.edge
 
 import com.prewave.supplychain_processor.jooq.Tables.EDGE
 import org.jooq.DSLContext
-import org.jooq.impl.DSL
+import org.jooq.impl.DSL.*
 import org.jooq.impl.SQLDataType.INTEGER
 import org.springframework.stereotype.Repository
 
@@ -37,23 +37,23 @@ class EdgeRepository(
     }
 
     fun isAncestor(ancestorId: Int, nodeId: Int): Boolean {
-        val ancestors = DSL.name("ancestors")
-        val ancestorsId = DSL.field(DSL.name("ancestors", "id"), INTEGER)
+        val ancestors = name("ancestors")
+        val ancestorsId = field(name("ancestors", "id"), INTEGER)
 
         val cte = ancestors.fields("id").`as`(
-            DSL.select(EDGE.FROM_ID)
+            select(EDGE.FROM_ID)
                 .from(EDGE)
                 .where(EDGE.TO_ID.eq(nodeId))
                 .union(
-                    DSL.select(EDGE.FROM_ID)
+                    select(EDGE.FROM_ID)
                         .from(EDGE)
-                        .join(DSL.table(ancestors))
+                        .join(table(ancestors))
                         .on(EDGE.TO_ID.eq(ancestorsId))
                 )
         )
 
         return dsl.fetchExists(
-            DSL.withRecursive(cte)
+            withRecursive(cte)
                 .selectOne()
                 .from(cte)
                 .where(ancestorsId.eq(ancestorId))

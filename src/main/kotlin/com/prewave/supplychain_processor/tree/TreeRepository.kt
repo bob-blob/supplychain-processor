@@ -2,14 +2,7 @@ package com.prewave.supplychain_processor.tree
 
 import com.prewave.supplychain_processor.jooq.Tables.EDGE
 import org.jooq.DSLContext
-import org.jooq.impl.DSL
-import org.jooq.impl.DSL.arrayAppend
-import org.jooq.impl.DSL.castNull
-import org.jooq.impl.DSL.field
-import org.jooq.impl.DSL.name
-import org.jooq.impl.DSL.select
-import org.jooq.impl.DSL.table
-import org.jooq.impl.DSL.value
+import org.jooq.impl.DSL.*
 import org.jooq.impl.SQLDataType.INTEGER
 import org.springframework.stereotype.Repository
 
@@ -19,7 +12,7 @@ data class TreeRow(
 )
 
 private val TREE = name("tree")
-private val TREE_ID = field(DSL.name("tree", "id"), INTEGER)
+private val TREE_ID = field(name("tree", "id"), INTEGER)
 private val TREE_DEPTH = field(name("tree", "depth"), INTEGER)
 private val TREE_PATH = field(name("tree", "path"), INTEGER.array())
 
@@ -41,7 +34,7 @@ class TreeRepository(
 
     fun streamNestedSubtree(rootId: Int, writer: (TreeRow) -> Unit) {
         val tree = TREE.fields("id", "depth", "path").`as`(
-            select(value(rootId), DSL.inline(0), value(arrayOf(rootId), INTEGER.array()))
+            select(value(rootId), inline(0), value(arrayOf(rootId), INTEGER.array()))
                 .unionAll(
                     select(EDGE.TO_ID, TREE_DEPTH.plus(1), arrayAppend(TREE_PATH, EDGE.TO_ID))
                         .from(EDGE)
@@ -51,7 +44,7 @@ class TreeRepository(
         )
 
         dsl.transaction { config ->
-            DSL.using(config)
+            using(config)
                 .withRecursive(tree)
                 .select(TREE_ID, TREE_DEPTH)
                 .from(TREE)
@@ -67,7 +60,7 @@ class TreeRepository(
     fun streamFlatSubtree(rootId: Int, writer: (FlatTreeRow) -> Unit) {
         val tree =
             TREE.fields("id", "parent_id", "depth").`as`(
-                select(value(rootId), castNull(INTEGER), DSL.inline(0))
+                select(value(rootId), castNull(INTEGER), inline(0))
                     .unionAll(
                         select(EDGE.TO_ID, EDGE.FROM_ID, TREE_DEPTH.plus(1))
                             .from(EDGE)
@@ -77,7 +70,7 @@ class TreeRepository(
             )
 
         dsl.transaction { config ->
-            DSL.using(config)
+            using(config)
                 .withRecursive(tree)
                 .select(TREE_ID, TREE_PARENT_ID, TREE_DEPTH)
                 .from(tree)

@@ -42,3 +42,6 @@ postgres:17
 
 ## Test the app
 I've included simple Postman requests to test the endpoints in file Prewave.postman_collection.json in the root of the project.
+Api for edges is located at /api/v1/edge.
+Api for tree is located at /api/v1/tree.
+Default port for backend service is 8080
